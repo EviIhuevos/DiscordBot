@@ -5,7 +5,7 @@ import { lavalinkService } from '../../bot';
 export default {
   data: new SlashCommandBuilder().setName('queue').setDescription('Показать очередь треков'),
   async execute(interaction: ChatInputCommandInteraction) {
-	const player: any = lavalinkService.lavashark.players.get(interaction.guildId!);
+    const player: any = lavalinkService.lavashark.players.get(interaction.guildId!);
     if (!player || !player.queue?.length) {
       return interaction.reply({ content: 'Очередь пуста.', ephemeral: true });
     }
