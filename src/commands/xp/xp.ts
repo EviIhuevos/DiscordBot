@@ -9,6 +9,11 @@ import xpService from '../../services/xpService';
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import config from '../../utils/config';
 
+// Регистрируем шрифт для корректного отображения текста
+registerFont('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', {
+  family: 'DejaVu Sans'
+});
+
 // Регистрация команд
 export default {
   data: new SlashCommandBuilder()
@@ -127,6 +132,7 @@ export default {
       const avatarURL = target.displayAvatarURL({ extension: 'png', size: 128 });
       const avatar = await loadImage(avatarURL);
       const avatarSize = 80;
+      ctx.save();
       ctx.beginPath();
       ctx.arc(90, 90, avatarSize / 2, 0, Math.PI * 2, true);
       ctx.closePath();
@@ -136,9 +142,9 @@ export default {
 
       // Текст
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 20px Sans';
+      ctx.font = 'bold 20px "DejaVu Sans"';
       ctx.fillText(`${target.tag}`, 160, 70);
-      ctx.font = '16px Sans';
+      ctx.font = '16px "DejaVu Sans"';
       ctx.fillText(`XP: ${xp}`, 160, 100);
       ctx.fillText(`Level: ${level}`, 160, 120);
 
@@ -156,7 +162,7 @@ export default {
       ctx.fillRect(barX, barY, barWidth * percent, barHeight);
       // Текст прогресса
       ctx.fillStyle = '#ffffff';
-      ctx.font = '14px Sans';
+      ctx.font = '14px "DejaVu Sans"';
       ctx.fillText(`${xpInLevel} / ${xpForNext}`, barX + barWidth / 2 - 30, barY + barHeight - 4);
 
       // Отправка изображения
