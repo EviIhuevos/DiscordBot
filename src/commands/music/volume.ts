@@ -12,11 +12,15 @@ export default {
     if (vol < 0 || vol > 100) {
       return interaction.reply({ content: 'Громкость должна быть от 0 до 100.', ephemeral: true });
     }
-    const player = lavalinkService.lavashark.players.get(interaction.guildId!);
+    const player: any = lavalinkService.lavashark.players.get(interaction.guildId!);
     if (!player) {
       return interaction.reply({ content: 'Плеер не найден.', ephemeral: true });
     }
-    player.setVolume(vol);
+    if (typeof player.setVolume === 'function') {
+      player.setVolume(vol);
+    } else {
+      player.volume = vol;
+    }
     await interaction.reply(`Громкость установлена: **${vol}%**`);
   },
 };
