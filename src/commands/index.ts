@@ -15,7 +15,12 @@ export function loadCommands(): Collection<string, Command> {
   // Загружаем команды из корня директории
   const rootFiles = fs
     .readdirSync(commandsPath)
-    .filter((f) => f.endsWith('.ts') || f.endsWith('.js'));
+    .filter(
+      (f) =>
+        (f.endsWith('.ts') || f.endsWith('.js')) &&
+        f !== 'index.ts' &&
+        f !== 'index.js'
+    );
   for (const file of rootFiles) {
     const filePath = path.join(commandsPath, file);
     // eslint-disable-next-line @typescript-eslint/no-var-requires
