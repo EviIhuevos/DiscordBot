@@ -1,11 +1,11 @@
 // src/commands/music/queue.ts
 import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { lavalinkService } from '../../bot';
 
 export default {
   data: new SlashCommandBuilder().setName('queue').setDescription('Показать очередь треков'),
   async execute(interaction: ChatInputCommandInteraction) {
-    const clientAny = interaction.client as any;
-    const player = clientAny.lavalink.manager.players.get(interaction.guildId!);
+	const player = lavalinkService.lavashark.players.get(interaction.guildId!);
     if (!player || !player.queue.length) {
       return interaction.reply({ content: 'Очередь пуста.', ephemeral: true });
     }
