@@ -24,6 +24,11 @@ export default {
       }
 
       const query = interaction.options.getString('query', true);
+      let searchQuery = query;
+      if (!/^https?:\/\//i.test(query)) {
+        // Если не ссылка, ищем на YouTube
+        searchQuery = `ytsearch:${query}`;
+      }
 
       const member = interaction.member as GuildMember;
 
@@ -40,7 +45,7 @@ export default {
 		selfDeaf: true,
 	});
 
-      const searchResult = await lavalinkService.lavashark.search(query);
+      const searchResult = await lavalinkService.lavashark.search(searchQuery);
 
       if (!searchResult.tracks.length) {
         await interaction.reply({ content: '❌ Трек не найден!', ephemeral: true });
@@ -61,12 +66,21 @@ export default {
         // Ensure lavalink player is connected to the voice channel
         await player.connect();
 
-	if (player.queue && typeof player.queue.add === 'function') {
-		player.queue.add(track);
-		await player.play();
-	}
+        const wasEmpty = !player.playing && player.queue.tracks.length === 0;
 
-      await interaction.reply({ content: `▶️ Воспроизвожу: **${track.title}**`, ephemeral: false });
+        if (player.queue && typeof player.queue.add === 'function') {
+                player.queue.add(track);
+        }
+
+        if (!player.playing) {
+                await player.play();
+        }
+
+      const message = wasEmpty
+        ? `▶️ Воспроизвожу: **${track.title}**`
+        : `▶️ Добавлено в очередь: **${track.title}**`;
+      await interaction.reply({ content: message, ephemeral: false });
+
     } catch (err: any) {
       logger.error('Ошибка при выполнении команды play:', err);
       if (interaction.replied) return;
