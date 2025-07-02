@@ -16,10 +16,11 @@ export default {
     if (!player) {
       return interaction.reply({ content: 'Плеер не найден.', ephemeral: true });
     }
+    // lavashark typings may not expose setVolume, but it exists at runtime
     if (typeof player.setVolume === 'function') {
-      player.setVolume(vol);
+      await player.setVolume(vol);
     } else {
-      player.volume = vol;
+      (player as any).setVolume?.(vol);
     }
     await interaction.reply(`Громкость установлена: **${vol}%**`);
   },
