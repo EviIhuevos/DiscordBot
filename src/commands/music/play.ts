@@ -49,14 +49,17 @@ export default {
 
       const track = searchResult.tracks[0];
 
-	let player = lavalinkService.lavashark.players.get(interaction.guildId!);
-	if (!player) {
-		player = lavalinkService.lavashark.createPlayer({
-			guildId: interaction.guildId!,
-			voiceChannelId: member.voice.channel.id,
-			selfDeaf: true,
-		});
-	}
+        let player = lavalinkService.lavashark.players.get(interaction.guildId!);
+        if (!player) {
+                player = lavalinkService.lavashark.createPlayer({
+                        guildId: interaction.guildId!,
+                        voiceChannelId: member.voice.channel.id,
+                        selfDeaf: true,
+                });
+        }
+
+        // Ensure lavalink player is connected to the voice channel
+        await player.connect();
 
 	if (player.queue && typeof player.queue.add === 'function') {
 		player.queue.add(track);
