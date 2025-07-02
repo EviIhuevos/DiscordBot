@@ -5,6 +5,7 @@ import config from '../utils/config';
 
 class LavalinkService {
   public lavashark: LavaShark;
+  private connected = false;
 
   constructor(client: Client) {
     this.lavashark = new LavaShark({
@@ -36,10 +37,12 @@ class LavalinkService {
 
   private registerEvents() {
     this.lavashark.on('nodeConnect', (node) => {
+      this.connected = true;
       logger.info(`✅ Lavalink node connected: ${node.options.hostname}:${node.options.port}`);
     });
 
     this.lavashark.on('nodeDisconnect', (node, reason) => {
+      this.connected = false;
       logger.warn(`❌ Lavalink node disconnected: ${node.options.hostname}:${node.options.port} | ${reason}`);
     });
 
@@ -56,9 +59,8 @@ class LavalinkService {
     });
   }
 
-public isConnected(): boolean {
-  console.log('Node state:', this.lavashark.nodes[0]?.state);
-  return this.lavashark.nodes.some(node => (node as any).state === 0);
-}
+  public isConnected(): boolean {
+    return this.connected;
+  }
 }
 export default LavalinkService;
