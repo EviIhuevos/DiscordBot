@@ -1,0 +1,30 @@
+{
+  "name": "5HeadBot",
+  "version": "1.0.0",
+  "description": "Discord бот с модерированием, музыкой, XP и стриминг-функциями",
+  "main": "dist/bot.js",
+  "scripts": {
+    "start": "ts-node src/bot.ts",
+    "build": "tsc",
+    "serve": "node dist/bot.js"
+  },
+  "dependencies": {
+    "@discordjs/opus": "^0.10.0",
+    "@discordjs/rest": "^2.5.1",
+    "@discordjs/voice": "^0.18.0",
+    "axios": "^1.10.0",
+    "canvas": "^3.1.2",
+    "discord-api-types": "^0.38.14",
+    "discord.js": "^14.21.0",
+    "dotenv": "^17.0.1",
+    "lavashark": "^2.1.2",
+    "mysql2": "^3.14.1",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.1",
+    "@types/winston": "^2.4.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
