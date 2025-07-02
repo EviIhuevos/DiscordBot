@@ -12,6 +12,19 @@ export function loadCommands(): Collection<string, Command> {
   const commands = new Collection<string, Command>();
   const commandsPath = path.resolve(__dirname);
 
+  // Загружаем команды из корня директории
+  const rootFiles = fs
+    .readdirSync(commandsPath)
+    .filter((f) => f.endsWith('.ts') || f.endsWith('.js'));
+  for (const file of rootFiles) {
+    const filePath = path.join(commandsPath, file);
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const command: Command = require(filePath).default;
+    if ('data' in command && 'execute' in command) {
+      commands.set(command.data.name, command);
+    }
+  }
+
   // Проходим по всем папкам в src/commands
   fs.readdirSync(commandsPath).forEach(folder => {
     const folderPath = path.join(commandsPath, folder);
