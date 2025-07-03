@@ -21,8 +21,6 @@ export default {
         await interaction.reply({ content: '❌ Lavalink node не подключена. Попробуйте позже.', flags: MessageFlags.Ephemeral });
         return;
       }
-
-uipwbl-codex/fix-multiple-playback-errors
       const query = interaction.options.getString('query');
 
       const member = interaction.member as GuildMember;
@@ -36,14 +34,11 @@ uipwbl-codex/fix-multiple-playback-errors
       }
 
       const member = interaction.member as GuildMember;
-
-      main
       if (!member.voice.channel) {
         await interaction.reply({ content: '❌ Вы должны быть в голосовом канале!', flags: MessageFlags.Ephemeral });
         return;
       }
 
- uipwbl-codex/fix-multiple-playback-errors
       if (!query) {
         const player: any = lavalinkService.lavashark.players.get(interaction.guildId!);
         const current = player?.queue?.current;
@@ -142,12 +137,12 @@ uipwbl-codex/fix-multiple-playback-errors
       const message = wasEmpty
         ? `▶️ Воспроизвожу: **${track.title}**`
         : `▶️ Добавлено в очередь: **${track.title}**`;
-     main
       await interaction.reply({ content: message });
 
     } catch (err: any) {
       logger.error('Ошибка при выполнении команды play:', err);
       if (interaction.replied) return;
+      await interaction.reply({ content: '❌ Произошла ошибка при попытке воспроизвести трек.', flags: MessageFlags.Ephemeral });
       await interaction.reply({ content: '❌ Произошла ошибка при попытке воспроизвести трек.', flags: MessageFlags.Ephemeral });
     }
   },

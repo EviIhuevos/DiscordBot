@@ -1,6 +1,5 @@
 // src/commands/music/skip.ts
 import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-uipwbl-codex/fix-multiple-playback-errors
 import { lavalinkService } from '../../bot';
 
 export default {
@@ -76,6 +75,5 @@ export default {
       await player.play();
     }
     await interaction.reply(`Пропущен: **${current.title}**`);
-   main
   },
 };
