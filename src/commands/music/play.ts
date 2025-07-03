@@ -5,13 +5,13 @@ import logger from '../../utils/logger';
 export default {
   data: {
     name: 'play',
-    description: 'Воспроизводит трек',
+    description: 'Воспроизводит трек или выводит текущий',
     options: [
       {
         name: 'query',
         type: 3,
-        description: 'YouTube ссылка или поисковой запрос',
-        required: true,
+        description: 'Название, ссылка или плейлист YouTube',
+        required: false,
       },
     ],
   },
@@ -22,13 +22,7 @@ export default {
         return;
       }
 
-      const query = interaction.options.getString('query', true);
-
-      let searchQuery = query;
-      if (!/^https?:\/\//i.test(query)) {
-        // Если не ссылка, ищем на YouTube
-        searchQuery = `ytsearch:${query}`;
-      }
+      const query = interaction.options.getString('query');
 
       const member = interaction.member as GuildMember;
 
@@ -37,41 +31,68 @@ export default {
         return;
       }
 
+      if (!query) {
+        const player: any = lavalinkService.lavashark.players.get(interaction.guildId!);
+        const current = player?.queue?.current;
+        if (!player || !current) {
+          await interaction.reply({ content: 'Сейчас ничего не играет.', flags: MessageFlags.Ephemeral });
+          return;
+        }
+        await interaction.reply({ content: `🎶 Сейчас играет: **${current.title}**` });
+        return;
+      }
 
-      const searchResult = await lavalinkService.lavashark.search(searchQuery);
+      let searchQuery = query;
+      if (!/^https?:\/\//i.test(query)) {
+        // Если не ссылка, ищем на YouTube
+        searchQuery = `ytsearch:${query}`;
+      }
+
+
+      const searchResult = await lavalinkService.lavashark.search(searchQuery).catch(() => null);
 
       if (!searchResult || !Array.isArray(searchResult.tracks) || searchResult.tracks.length === 0) {
         await interaction.reply({ content: '❌ Трек не найден!', flags: MessageFlags.Ephemeral });
         return;
       }
 
-      const track = searchResult.tracks[0];
+      let player: any = lavalinkService.lavashark.players.get(interaction.guildId!);
+      if (!player) {
+        player = lavalinkService.lavashark.createPlayer({
+          guildId: interaction.guildId!,
+          voiceChannelId: member.voice.channel.id,
+          selfDeaf: true,
+        });
+      }
 
-        let player = lavalinkService.lavashark.players.get(interaction.guildId!);
-        if (!player) {
-                player = lavalinkService.lavashark.createPlayer({
-                        guildId: interaction.guildId!,
-                        voiceChannelId: member.voice.channel.id,
-                        selfDeaf: true,
-                });
+      await player.connect();
+      lavalinkService.clearLeave(interaction.guildId!);
+
+      const wasEmpty = !player.playing && player.queue.tracks.length === 0;
+      let message: string;
+
+      if (searchResult.playlistInfo && searchResult.tracks.length > 1) {
+        for (const t of searchResult.tracks) {
+          player.queue.add(t);
         }
-
-        // Ensure lavalink player is connected to the voice channel
-        await player.connect();
-
-        const wasEmpty = !player.playing && player.queue.tracks.length === 0;
-
-        if (player.queue && typeof player.queue.add === 'function') {
-                player.queue.add(track);
+        if (!player.playing) {
+          await player.play();
         }
+        message = `▶️ Добавлен плейлист: **${searchResult.playlistInfo.name}** (${searchResult.tracks.length} треков)`;
+      } else {
+        const track = searchResult.tracks[0];
+
+        player.queue.add(track);
 
         if (!player.playing) {
-                await player.play();
+          await player.play();
         }
 
-      const message = wasEmpty
-        ? `▶️ Воспроизвожу: **${track.title}**`
-        : `▶️ Добавлено в очередь: **${track.title}**`;
+        message = wasEmpty
+          ? `▶️ Воспроизвожу: **${track.title}**`
+          : `▶️ Добавлено в очередь: **${track.title}**`;
+      }
+
       await interaction.reply({ content: message });
 
     } catch (err: any) {
