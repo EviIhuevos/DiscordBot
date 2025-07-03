@@ -109,13 +109,22 @@ class XPService {
   public async setLevel(userId: string, level: number) {
     const conn = await this.pool.getConnection();
     try {
-      await conn.query('UPDATE users SET level = ? WHERE user_id = ?', [level, userId]);
-      logger.info(`Level set: ${userId} => level=${level}`);
+      const xpForLevel = 100 * level * level;
+      await conn.query('UPDATE users SET level = ?, xp = ? WHERE user_id = ?', [level, xpForLevel, userId]);
+      logger.info(`Level set: ${userId} => level=${level}, xp=${xpForLevel}`);
     } catch (error) {
       logger.error('Error in XPService.setLevel:', error);
     } finally {
       conn.release();
     }
+  }
+
+  public async getLeaderboard(limit = 10): Promise<UserRecord[]> {
+    const [rows] = await this.pool.query<RowDataPacket[]>(
+      'SELECT user_id, xp, level FROM users ORDER BY xp DESC LIMIT ?',
+      [limit]
+    );
+    return rows as UserRecord[];
   }
 
   public async blacklistUser(userId: string) {

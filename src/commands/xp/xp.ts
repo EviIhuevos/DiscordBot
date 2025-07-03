@@ -67,6 +67,11 @@ export default {
         .setName('info')
         .setDescription('Показать XP и уровень пользователя')
         .addUserOption(opt => opt.setName('user').setDescription('Пользователь (по умолчанию вы)'))
+    )
+    .addSubcommand(cmd =>
+      cmd
+        .setName('rating')
+        .setDescription('Топ пользователей по XP')
     ),
   async execute(interaction: ChatInputCommandInteraction<CacheType>) {
     const group = interaction.options.getSubcommandGroup(false);
@@ -170,6 +175,15 @@ export default {
       const buffer = canvas.toBuffer('image/png');
       const attachment = new AttachmentBuilder(buffer, { name: 'xp-card.png' });
       await interaction.editReply({ files: [attachment] });
+    } else if (sub === 'rating') {
+      await interaction.deferReply();
+      const top = await xpService.getLeaderboard(10);
+      if (top.length === 0) {
+        await interaction.editReply('Таблица пуста');
+        return;
+      }
+      const lines = top.map((u, i) => `${i + 1}. <@${u.user_id}> - ${u.level} lvl (${u.xp} XP)`);
+      await interaction.editReply(lines.join('\n'));
     }
   }
 };
