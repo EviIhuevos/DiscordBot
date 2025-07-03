@@ -3,7 +3,8 @@ import {
   SlashCommandBuilder,
   ChatInputCommandInteraction,
   CacheType,
-  AttachmentBuilder
+  AttachmentBuilder,
+  MessageFlags
 } from 'discord.js';
 import xpService from '../../services/xpService';
 import { createCanvas, loadImage, registerFont } from 'canvas';
@@ -72,7 +73,7 @@ export default {
     const sub = interaction.options.getSubcommand();
     // Админ-команды
     if (group === 'admin') {
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       const user = interaction.options.getUser('user', true);
       const userId = user.id;
       const reason = interaction.options.getString('reason') || 'Не указана';

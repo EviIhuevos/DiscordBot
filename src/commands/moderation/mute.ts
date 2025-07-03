@@ -1,5 +1,5 @@
 // src/commands/moderation/mute.ts
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import logger from '../../utils/logger';
 
 export default {
@@ -15,11 +15,11 @@ export default {
 
     const muteRole = interaction.guild!.roles.cache.find(r => r.name.toLowerCase() === 'muted');
     if (!muteRole) {
-      return interaction.reply({ content: 'Роль **Muted** не найдена на сервере.', ephemeral: true });
+      return interaction.reply({ content: 'Роль **Muted** не найдена на сервере.', flags: MessageFlags.Ephemeral });
     }
 
     if (member.roles.cache.has(muteRole.id)) {
-      return interaction.reply({ content: 'Пользователь уже замьючен.', ephemeral: true });
+      return interaction.reply({ content: 'Пользователь уже замьючен.', flags: MessageFlags.Ephemeral });
     }
 
     await member.roles.add(muteRole.id);

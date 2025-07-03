@@ -1,5 +1,5 @@
 // src/commands/roles/reaction-role.ts
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import roleService from '../../services/roleService';
 import logger from '../../utils/logger';
 
@@ -31,13 +31,13 @@ export default {
       await roleService.createReactionRole(messageId, emoji, role.id);
       await interaction.reply({
         content: `Привязка реакции ${emoji} к роли ${role.name} на сообщении ${messageId} создана. 🤖`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     } catch (error) {
       logger.error('Error in reaction-role command:', error);
       await interaction.reply({
         content: 'Не удалось создать привязку реакции к роли.',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   }
