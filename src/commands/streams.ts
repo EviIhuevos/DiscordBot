@@ -1,5 +1,5 @@
 // src/commands/streams.ts
-import { SlashCommandBuilder, ChatInputCommandInteraction, CacheType, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, CacheType, EmbedBuilder, PermissionFlagsBits, MessageFlags } from 'discord.js';
 import { createPool } from 'mysql2/promise';
 import config from '../utils/config';
 import logger from '../utils/logger';
@@ -73,7 +73,7 @@ export default {
     const group = interaction.options.getSubcommandGroup(false);
     const sub = interaction.options.getSubcommand();
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     try {
       if (group === 'twitch') {

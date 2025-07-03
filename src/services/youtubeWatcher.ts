@@ -65,8 +65,12 @@ class YouTubeWatcher {
         await this.notifyNewVideo(rec, latest.snippet.title, videoId);
         await this.updateLastVideo(rec.id, videoId);
       }
-    } catch (error) {
-      logger.error('Error in YouTubeWatcher.checkChannel:', error);
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        logger.error('Error in YouTubeWatcher.checkChannel: Bad request - проверьте API ключ и channelId');
+      } else {
+        logger.error('Error in YouTubeWatcher.checkChannel:', error);
+      }
     }
   }
 

@@ -6,6 +6,7 @@ import config from '../utils/config';
 class LavalinkService {
   public lavashark: LavaShark;
   private connected = false;
+  private leaveTimers: Map<string, NodeJS.Timeout> = new Map();
 
   constructor(client: Client) {
     this.lavashark = new LavaShark({
@@ -57,10 +58,37 @@ class LavalinkService {
     this.lavashark.on('error', (node, err) => {
       logger.error(`❌ Ошибка в node ${node.options.hostname}: ${err.message}`);
     });
+
+    this.lavashark.on('playerError', (player: Player, err) => {
+      logger.error(`❌ Ошибка плеера в гильдии ${player.guildId}: ${err.message}`);
+    });
+
+    this.lavashark.on('queueEnd', (player: Player) => {
+      this.scheduleLeave(player.guildId);
+    });
   }
 
   public isConnected(): boolean {
     return this.connected;
+  }
+
+  public scheduleLeave(guildId: string) {
+    this.clearLeave(guildId);
+    const timeout = setTimeout(() => {
+      const player = this.lavashark.players.get(guildId);
+      if (player && !player.playing && player.queue.tracks.length === 0) {
+        player.destroy();
+      }
+    }, 60_000);
+    this.leaveTimers.set(guildId, timeout);
+  }
+
+  public clearLeave(guildId: string) {
+    const t = this.leaveTimers.get(guildId);
+    if (t) {
+      clearTimeout(t);
+      this.leaveTimers.delete(guildId);
+    }
   }
 }
 export default LavalinkService;

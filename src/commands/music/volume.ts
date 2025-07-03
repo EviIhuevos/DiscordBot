@@ -1,5 +1,5 @@
 // src/commands/music/volume.ts
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { lavalinkService } from '../../bot';
 
 export default {
@@ -10,11 +10,11 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
 	const vol = interaction.options.getInteger('level', true);
     if (vol < 0 || vol > 100) {
-      return interaction.reply({ content: 'Громкость должна быть от 0 до 100.', ephemeral: true });
+      return interaction.reply({ content: 'Громкость должна быть от 0 до 100.', flags: MessageFlags.Ephemeral });
     }
     const player: any = lavalinkService.lavashark.players.get(interaction.guildId!);
     if (!player) {
-      return interaction.reply({ content: 'Плеер не найден.', ephemeral: true });
+      return interaction.reply({ content: 'Плеер не найден.', flags: MessageFlags.Ephemeral });
     }
     // lavashark typings may not expose setVolume, but it exists at runtime
     if (typeof player.setVolume === 'function') {

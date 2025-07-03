@@ -1,4 +1,4 @@
-import { Events, Interaction, GuildMember } from 'discord.js';
+import { Events, Interaction, GuildMember, MessageFlags } from 'discord.js';
 import { canExecute } from '../services/acl';
 import logger from '../utils/logger';
 import { ClientExt } from '../types'; // Расширенный тип клиента с коллекцией commands
@@ -23,7 +23,7 @@ export default {
     if (!canExecute(member, commandName)) {
       return interaction.reply({
         content: 'У вас нет прав для выполнения этой команды.',
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
     }
 
@@ -34,12 +34,12 @@ export default {
       if (interaction.replied || interaction.deferred) {
         await interaction.followUp({
           content: 'Произошла ошибка при выполнении команды.',
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
       } else {
         await interaction.reply({
           content: 'Произошла ошибка при выполнении команды.',
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
       }
     }
