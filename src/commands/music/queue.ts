@@ -1,5 +1,5 @@
 // src/commands/music/queue.ts
-import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { lavalinkService } from '../../bot';
 
 export default {
@@ -8,7 +8,7 @@ export default {
     const player: any = lavalinkService.lavashark.players.get(interaction.guildId!);
     const tracks: any[] = player?.queue?.tracks ?? [];
     if (!player || tracks.length === 0) {
-      return interaction.reply({ content: 'Очередь пуста.', ephemeral: true });
+      return interaction.reply({ content: 'Очередь пуста.', flags: MessageFlags.Ephemeral });
     }
     const list = tracks
       .map((track: any, i: number) => `${i + 1}. ${track.title}`)

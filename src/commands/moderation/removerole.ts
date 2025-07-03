@@ -1,5 +1,5 @@
 // src/commands/moderation/removerole.ts
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -13,7 +13,7 @@ export default {
     const member = await interaction.guild!.members.fetch(user.id);
 
     if (!member.roles.cache.has(role.id)) {
-      return interaction.reply({ content: 'У пользователя нет этой роли.', ephemeral: true });
+      return interaction.reply({ content: 'У пользователя нет этой роли.', flags: MessageFlags.Ephemeral });
     }
 
     await member.roles.remove(role.id);

@@ -1,5 +1,5 @@
 // src/commands/moderation/ban.ts
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -18,7 +18,7 @@ export default {
     const member = await interaction.guild!.members.fetch(user.id);
 
     if (!member.bannable) {
-      return interaction.reply({ content: 'Не могу забанить этого пользователя.', ephemeral: true });
+      return interaction.reply({ content: 'Не могу забанить этого пользователя.', flags: MessageFlags.Ephemeral });
     }
 
     await member.ban({ reason });

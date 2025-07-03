@@ -1,5 +1,4 @@
-import { ChatInputCommandInteraction, GuildMember } from 'discord.js';
-import { joinVoiceChannel } from '@discordjs/voice';
+import { ChatInputCommandInteraction, GuildMember, MessageFlags } from 'discord.js';
 import { lavalinkService } from '../../bot';
 import logger from '../../utils/logger';
 
@@ -19,11 +18,12 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
     try {
       if (!lavalinkService.isConnected()) {
-        await interaction.reply({ content: '❌ Lavalink node не подключена. Попробуйте позже.', ephemeral: true });
+        await interaction.reply({ content: '❌ Lavalink node не подключена. Попробуйте позже.', flags: MessageFlags.Ephemeral });
         return;
       }
 
       const query = interaction.options.getString('query', true);
+
       let searchQuery = query;
       if (!/^https?:\/\//i.test(query)) {
         // Если не ссылка, ищем на YouTube
@@ -33,22 +33,15 @@ export default {
       const member = interaction.member as GuildMember;
 
       if (!member.voice.channel) {
-        await interaction.reply({ content: '❌ Вы должны быть в голосовом канале!', ephemeral: true });
+        await interaction.reply({ content: '❌ Вы должны быть в голосовом канале!', flags: MessageFlags.Ephemeral });
         return;
       }
 
-	  // Подключаемся к войс-каналу
-		joinVoiceChannel({
-		channelId: member.voice.channel.id,
-		guildId: interaction.guildId!,
-		adapterCreator: interaction.guild!.voiceAdapterCreator,
-		selfDeaf: true,
-	});
 
       const searchResult = await lavalinkService.lavashark.search(searchQuery);
 
-      if (!searchResult.tracks.length) {
-        await interaction.reply({ content: '❌ Трек не найден!', ephemeral: true });
+      if (!searchResult || !Array.isArray(searchResult.tracks) || searchResult.tracks.length === 0) {
+        await interaction.reply({ content: '❌ Трек не найден!', flags: MessageFlags.Ephemeral });
         return;
       }
 
@@ -79,12 +72,12 @@ export default {
       const message = wasEmpty
         ? `▶️ Воспроизвожу: **${track.title}**`
         : `▶️ Добавлено в очередь: **${track.title}**`;
-      await interaction.reply({ content: message, ephemeral: false });
+      await interaction.reply({ content: message });
 
     } catch (err: any) {
       logger.error('Ошибка при выполнении команды play:', err);
       if (interaction.replied) return;
-      await interaction.reply({ content: '❌ Произошла ошибка при попытке воспроизвести трек.', ephemeral: true });
+      await interaction.reply({ content: '❌ Произошла ошибка при попытке воспроизвести трек.', flags: MessageFlags.Ephemeral });
     }
   },
 };

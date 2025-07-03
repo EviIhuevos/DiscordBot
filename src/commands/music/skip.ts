@@ -1,5 +1,5 @@
 // src/commands/music/skip.ts
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { lavalinkService } from '../../bot';
 
 export default {
@@ -8,12 +8,15 @@ export default {
     const player: any = lavalinkService.lavashark.players.get(interaction.guildId!);
     const current = player?.queue?.current;
     if (!player || !current) {
-      return interaction.reply({ content: 'Нет трека для пропуска.', ephemeral: true });
+      return interaction.reply({ content: 'Нет трека для пропуска.', flags: MessageFlags.Ephemeral });
     }
-    if (typeof player.stop === 'function') {
-      await player.stop();
-    } else if (typeof player.stopTrack === 'function') {
+    if (typeof player.stopTrack === 'function') {
       await player.stopTrack();
+    } else if (typeof player.stop === 'function') {
+      await player.stop();
+    }
+    if (player.queue.tracks.length > 0) {
+      await player.play();
     }
     await interaction.reply(`Пропущен: **${current.title}**`);
   },
