@@ -6,7 +6,8 @@
     "outDir": "./dist",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "strict": true
+    "strict": true,
+    "types": []
   },
   "include": ["src"]
 }

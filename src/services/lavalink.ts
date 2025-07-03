@@ -59,7 +59,8 @@ class LavalinkService {
       logger.error(`❌ Ошибка в node ${node.options.hostname}: ${err.message}`);
     });
 
-    this.lavashark.on('playerError', (player: Player, err) => {
+    // Типы lavashark не содержат события playerError, поэтому приводим к any
+    this.lavashark.on('playerError' as any, (player: Player, err: any) => {
       logger.error(`❌ Ошибка плеера в гильдии ${player.guildId}: ${err.message}`);
     });
 
