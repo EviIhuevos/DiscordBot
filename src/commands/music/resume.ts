@@ -1,5 +1,5 @@
 // src/commands/music/resume.ts
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { lavalinkService } from '../../bot';
 
 export default {
@@ -7,7 +7,7 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
 	const player = lavalinkService.lavashark.players.get(interaction.guildId!);
     if (!player || !player.paused) {
-      return interaction.reply({ content: 'Нечего возобновлять.', ephemeral: true });
+      return interaction.reply({ content: 'Нечего возобновлять.', flags: MessageFlags.Ephemeral });
     }
     player.pause(false);
     await interaction.reply('Воспроизведение возобновлено.');

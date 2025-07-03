@@ -7,7 +7,8 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ComponentType
+  ComponentType,
+  MessageFlags
 } from 'discord.js';
 import { canExecute } from '../services/acl';
 import { Command } from '../types';
@@ -21,7 +22,7 @@ export default {
     .setDescription('Показать список доступных команд'),
 
   async execute(interaction: ChatInputCommandInteraction<CacheType>) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     const client = interaction.client as any;
     const commands: Command[] = Array.from((client.commands as Map<string, Command>).values());
     const member = interaction.member;
@@ -85,7 +86,7 @@ export default {
 
     collector.on('collect', async btn => {
       if (btn.user.id !== interaction.user.id) {
-        return btn.reply({ content: 'Это сообщение не для вас.', ephemeral: true });
+        return btn.reply({ content: 'Это сообщение не для вас.', flags: MessageFlags.Ephemeral });
       }
       // Обновляем индекс
       if (btn.customId === 'prev' && pageIndex > 0) pageIndex--;

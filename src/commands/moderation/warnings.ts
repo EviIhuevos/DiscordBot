@@ -1,5 +1,5 @@
 // src/commands/moderation/warnings.ts
-import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { createPool } from 'mysql2/promise';
 import config from '../../utils/config';
 
@@ -33,6 +33,6 @@ export default {
           : 'Нет предупреждений'
       );
 
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
   }
 };

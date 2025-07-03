@@ -1,5 +1,5 @@
 // src/commands/music/pause.ts
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { lavalinkService } from '../../bot';
 
 export default {
@@ -7,7 +7,7 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
     const player = lavalinkService.lavashark.players.get(interaction.guildId!);
     if (!player || !player.playing) {
-      return interaction.reply({ content: 'Нечего паузить.', ephemeral: true });
+      return interaction.reply({ content: 'Нечего паузить.', flags: MessageFlags.Ephemeral });
     }
     player.pause(true);
     await interaction.reply('Воспроизведение приостановлено.');

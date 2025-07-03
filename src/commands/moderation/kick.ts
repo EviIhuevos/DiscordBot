@@ -1,5 +1,5 @@
 // src/commands/moderation/kick.ts
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -13,7 +13,7 @@ export default {
     const member = await interaction.guild!.members.fetch(user.id);
 
     if (!member.kickable) {
-      return interaction.reply({ content: 'Не могу кикнуть этого пользователя.', ephemeral: true });
+      return interaction.reply({ content: 'Не могу кикнуть этого пользователя.', flags: MessageFlags.Ephemeral });
     }
 
     await member.kick(reason);
