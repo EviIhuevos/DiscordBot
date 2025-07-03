@@ -22,15 +22,28 @@ export default {
         return;
       }
 
+uipwbl-codex/fix-multiple-playback-errors
       const query = interaction.options.getString('query');
 
       const member = interaction.member as GuildMember;
 
+      const query = interaction.options.getString('query', true);
+
+      let searchQuery = query;
+      if (!/^https?:\/\//i.test(query)) {
+        // Если не ссылка, ищем на YouTube
+        searchQuery = `ytsearch:${query}`;
+      }
+
+      const member = interaction.member as GuildMember;
+
+      main
       if (!member.voice.channel) {
         await interaction.reply({ content: '❌ Вы должны быть в голосовом канале!', flags: MessageFlags.Ephemeral });
         return;
       }
 
+ uipwbl-codex/fix-multiple-playback-errors
       if (!query) {
         const player: any = lavalinkService.lavashark.players.get(interaction.guildId!);
         const current = player?.queue?.current;
@@ -93,6 +106,43 @@ export default {
           : `▶️ Добавлено в очередь: **${track.title}**`;
       }
 
+
+
+      const searchResult = await lavalinkService.lavashark.search(searchQuery);
+
+      if (!searchResult || !Array.isArray(searchResult.tracks) || searchResult.tracks.length === 0) {
+        await interaction.reply({ content: '❌ Трек не найден!', flags: MessageFlags.Ephemeral });
+        return;
+      }
+
+      const track = searchResult.tracks[0];
+
+        let player = lavalinkService.lavashark.players.get(interaction.guildId!);
+        if (!player) {
+                player = lavalinkService.lavashark.createPlayer({
+                        guildId: interaction.guildId!,
+                        voiceChannelId: member.voice.channel.id,
+                        selfDeaf: true,
+                });
+        }
+
+        // Ensure lavalink player is connected to the voice channel
+        await player.connect();
+
+        const wasEmpty = !player.playing && player.queue.tracks.length === 0;
+
+        if (player.queue && typeof player.queue.add === 'function') {
+                player.queue.add(track);
+        }
+
+        if (!player.playing) {
+                await player.play();
+        }
+
+      const message = wasEmpty
+        ? `▶️ Воспроизвожу: **${track.title}**`
+        : `▶️ Добавлено в очередь: **${track.title}**`;
+     main
       await interaction.reply({ content: message });
 
     } catch (err: any) {

@@ -9,8 +9,12 @@ export default {
     if (!player) {
       return interaction.reply({ content: 'Плеер не найден.', flags: MessageFlags.Ephemeral });
     }
+  uipwbl-codex/fix-multiple-playback-errors
     lavalinkService.clearLeave(interaction.guildId!);
     player.destroy();
+
+    player.destroy();
+   main
     await interaction.reply('Воспроизведение остановлено и очередь очищена.');
   },
 };
